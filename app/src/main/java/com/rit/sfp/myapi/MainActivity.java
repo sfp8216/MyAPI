@@ -25,9 +25,12 @@ public class MainActivity extends AppCompatActivity {
     EditText emailText;
     TextView responseView;
     ProgressBar progressBar;
-    static final String API_KEY = "86d6fcdde6315a64";
-    static final String API_URL = "https://api.fullcontact.com/v2/person.json?";
+    //static final String API_KEY = "86d6fcdde6315a64";
+    //static final String API_URL = "https://api.fullcontact.com/v2/person.json?";
+    static final String API_KEY = "4e306afa29420c8b8c732fbe01e52e84";
+    static final String API_URL ="http://api.openweathermap.org/data/2.5/weather?";
 
+     String myFeedResult = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,24 +53,24 @@ public class MainActivity extends AppCompatActivity {
     class RetrieveFeedTask extends AsyncTask<Void, Void, String> {
 
         private Exception exception;
-        // Declare a string for 'email' here to be used in the doInBackground()
-        String email;
+        // Declare a string for 'searchString' here to be used in the doInBackground()
+        String searchString;
 
-// you might want to do some validation on the email here
+// you might want to do some validation on the searchString here
 
         protected void onPreExecute() {
 // what to do before the call to the Internet
 
             progressBar.setVisibility(View.VISIBLE);
             responseView.setText("");
-            email = emailText.getText().toString();
+            searchString = emailText.getText().toString();
         }
 
         protected String doInBackground(Void... urls) {
 // Execute the task in the background
 
             try {
-                URL url = new URL(API_URL + "email=" + email + "&apiKey=" + API_KEY);
+                URL url = new URL(API_URL + "q=" + searchString + "&APPID=" + API_KEY);
 
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
@@ -100,11 +103,14 @@ public class MainActivity extends AppCompatActivity {
 // Do something with the feed
             if (!response.equals("THERE WAS AN ERROR")) {
                 try {
-                    Log.i("INFOlol", response);
+                    Log.i("INFO", response);
                     JSONObject object = (JSONObject) new JSONTokener(response).nextValue();
-                    String requestId = object.getString("requestId");
-                    int status = object.getInt("status");
-
+                    JSONObject coord = object.getJSONObject("coord");
+                    String longitude = coord.getString("lon");
+                    String latitude = coord.getString("lat");
+                    Log.i("RESPONSE",object.getJSONObject("coord").getString("lon"));
+                    responseView.setText(responseView.getText() + "\n" + "Longitude: " + longitude
+                    +"\n" + "Latitude: " +latitude);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
